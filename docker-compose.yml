@@ -1,0 +1,32 @@
+version: "2.3"
+
+services:
+  wine: &wine_anchor
+    build:
+      context: .
+      dockerfile: docker/wine.Dockerfile
+    # prevent different users from clobbering each others images
+    image: ${WINE_DOCKER_REPO}:wine_${WINE_USERNAME}
+    environment:
+      # Variables for docker_entrypoint.bsh
+      - DOCKER_UID=${WINE_UID}
+      - DOCKER_GIDS=${WINE_GIDS}
+      - DOCKER_GROUP_NAMES=${WINE_GROUP_NAMES}
+      - DOCKER_USERNAME=user
+
+      #- DOCKER_HOME=${WINE_HOME}
+
+      - DISPLAY
+    # cap_add:
+    #   - SYS_PTRACE # Useful for gdb
+    volumes:
+      - type: bind
+        source: ${WINE_SOURCE_DIR}
+        target: ${WINE_SOURCE_DIR_DOCKER}
+      # - type: volume
+      #   source: home-volume
+      #   target: ${WINE_HOME} # home-volume should be overridable
+  wine2:
+    <<: *wine_anchor
+#   volumes:
+#   home-volume:
