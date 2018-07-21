@@ -22,7 +22,7 @@ function caseify()
         Docker-compose "${just_arg}" ${@+"${@}"}
         extra_args+=$#
       else
-        (justify build_recipes gosu tini vsi)
+        (justify build_recipes gosu tini-alpine vsi)
         Docker-compose build
       fi
       ;;
@@ -48,7 +48,15 @@ function caseify()
       ;;
     clean_all) # Delete all local volumes
       ask_question "Are you sure? This will packages not in Pipfile!" n
-      (justify clean venv)
+      (justify clean wine)
+      ;;
+    clean_wine) # Delete wine drive
+      if docker volume inspect "${COMPOSE_PROJECT_NAME}_wine-prefix" &> /dev/null; then
+        Docker volume rm "${COMPOSE_PROJECT_NAME}_wine-prefix"
+      else
+        echo "${COMPOSE_PROJECT_NAME}_wine-prefix already removed"
+      fi
+
       ;;
     *)
       defaultify "${just_arg}" ${@+"${@}"}

@@ -5,8 +5,9 @@ set -eu
 source "${VSI_COMMON_DIR:-/vsi}/linux/just_env" "${WINE_SOURCE_DIR}/wine.env"
 
 if [ "${ALREADY_RUN_ONCE+set}" != "set" ]; then
-  # create the user and associated groups and handle nfs symlinks
+  JUST_DOCKER_ENTRYPOINT_INTERNAL_DIRS="/home/wine" \
   /usr/bin/env bash /vsi/linux/docker_entrypoint.bsh
+  # creates the user and associated groups and handle nfs symlinks
 
   # Rerun entrypoint as user now, (skipping the root part via ALREADY_RUN_ONCE)
   ALREADY_RUN_ONCE=1 exec gosu ${DOCKER_USERNAME} /usr/bin/env bash $0 ${@+"${@}"}
@@ -22,7 +23,10 @@ source "${VSI_COMMON_DIR}/linux/docker_functions.bsh"
 # Remove duplicate WINE_*_DOCKER variables
 filter_docker_variables
 if [ "$1" == "wine" ]; then
-  echo "Run wine here: ${@+${@}}"
+  wineconsole
+elif [ "$1" == "curses" ]; then
+  # wineconsole cmd /c :
+  wineconsole
 else
   exec "${@}"
 fi

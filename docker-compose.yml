@@ -1,7 +1,7 @@
 version: "2.3"
 
 services:
-  wine: &wine_anchor
+  wine:
     build:
       context: .
       dockerfile: docker/wine.Dockerfile
@@ -13,9 +13,6 @@ services:
       - DOCKER_GIDS=${WINE_GIDS}
       - DOCKER_GROUP_NAMES=${WINE_GROUP_NAMES}
       - DOCKER_USERNAME=user
-
-      #- DOCKER_HOME=${WINE_HOME}
-
       - DISPLAY
     # cap_add:
     #   - SYS_PTRACE # Useful for gdb
@@ -23,10 +20,8 @@ services:
       - type: bind
         source: ${WINE_SOURCE_DIR}
         target: ${WINE_SOURCE_DIR_DOCKER}
-      # - type: volume
-      #   source: home-volume
-      #   target: ${WINE_HOME} # home-volume should be overridable
-  wine2:
-    <<: *wine_anchor
-#   volumes:
-#   home-volume:
+      - type: volume
+        target: /home/wine
+        source: wine-prefix
+volumes:
+  wine-prefix:
